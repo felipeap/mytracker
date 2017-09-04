@@ -1,0 +1,97 @@
+{% extends "base2.html" %}
+{% block content %}
+<style>
+.mctable {
+ font-family: sans-serif;
+ font-size: 12px;
+ border: 1px solid Gray;
+ background-color: Azure;
+ white-space: nowrap;
+}
+
+.mctableheader {
+ font-family: sans-serif;
+ font-size: 12px;
+ background-color: Azure;
+ border: 1px solid Gray;
+ white-space: nowrap;
+}
+</style>
+<script type="text/javascript">
+
+    function drawChartGPS() {
+		var dataTable = google.visualization.arrayToDataTable
+		([
+			[ 	{label: 'SeqNumber',  id: 'seqNumber'},
+				{label: 'Reason',  id: 'reason'},
+				{label: 'Date Device',id: 'datedevice'},
+				{label: 'UnixTime Device',id: 'unixtime'},
+				{label: 'Date Gtw',  id: 'dategtw'},
+				{label: 'Ignition' ,  id: 'ignition'},
+				{label: 'GPS Fix' ,  id: 'gpsfix'},
+				{label: 'GPRS' ,  id: 'gprsfix'},
+				{label: 'Lat' ,  id: 'lat'},
+                {label: 'Long' ,  id: 'long'},
+                {label: 'GSensor', id: 'gsensor'},
+                {label: 'Speed', id: 'speed'},
+                {label: 'CSQ'    ,  id: 'csq'},
+                {label: 'Ext Pwr', id: 'extPower'},
+                {label: 'Battery', id: 'battery'},
+                {label: 'Bat State', id: 'battState'},
+                {label: 'Uptime', id: 'uptime'},
+				{label: 'HDOP'    ,  id: 'hdop'},
+				{label: 'SNR'     ,  id: 'snr'},
+				{label: 'SVN'     ,  id: 'svn'},
+			],
+			{% for list in lista %}
+			[
+				{{ list.seqNumber }},
+				{{ list.reason }},
+				'{{ list.datetime }}',
+				'{{ list.unixTime }}',
+				'{{ list.gtwDate}}',
+                "{{ list.ignition }}",
+                "{{ list.gpsFix}}",
+                "{{ list.gprsFix}}",
+				"{{ list.lat }}",
+				"{{ list.long }}",
+                "{{ list.moving}}",
+				{{ list.speed }},
+                "{{ list.csq }}",
+                {{ list.extPower }},
+                {{ list.battery }},
+                {{ list.batteryState }},
+                {{ list.uptime }},
+				{{ list.hdop }},
+				{{ list.snr }},
+				{{ list.svn }},
+
+			],
+			{% endfor %}
+		]);
+
+		var optionsTable = {
+			page: 'enable',
+			frozenColumns: 1,
+			//width: 800,
+			pageSize: 30,
+			alternatingRowStyle: true,
+			showRowNumber: false,
+			allowHtml: true,
+			cssClassNames: {
+				 headerCell: 'mctableheader',
+				 tableCell:  'mctable'
+			}
+        };
+		var chart3 = new google.visualization.Table(document.getElementById('tab1_GPS'));
+		chart3.draw(dataTable, optionsTable);
+	}
+
+	google.load('visualization', '1.1', {'packages':['corechart','gauge', 'table'], 'callback': drawChartGPS});
+
+</script>
+<div id="tab1_GPS"></div>
+<script type="text/javascript">
+   hideImage(8);
+</script>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base2.html" %}
+{% block content %}
+
+<script>
+    var count = 0;
+   function load_MapMaxPB(serial1, date1, date2){
+        console.log(date2)
+		var link = '/n1_Maps?serial1=' + serial1 + '&linf=' + date1 + '&lsup=' + date2;
+		console.log(link)
+		//showImage(8);
+		console.log(count);
+
+		$('#divMapsMaxPB').load(link);
+		//count = count + 2;
+	}
+   	function MapChart()
+   	{
+   	    console.log("MAPCHART!");
+        if (window.google !== undefined && google.maps !== undefined) {
+        delete google.maps;
+        $('script').each(function () {
+            if (this.src.indexOf('googleapis.com/maps') >= 0
+                    || this.src.indexOf('maps.gstatic.com') >= 0
+                    || this.src.indexOf('earthbuilder.googleapis.com') >= 0) {
+                // console.log('removed', this.src);
+                $(this).remove();
+            }
+         });
+        }
+      	var serial1 = $( "#exampleSelect1" ).val()
+
+        var date1 = document.getElementById('datepicker1').value
+      	var date2 = document.getElementById('datepicker2').value
+
+      	date1 = date1.replace(" ", ":");
+      	date1 = date1.replace("/", ":");
+      	date1 = date1.replace("/", ":");
+
+      	date2 = date2.replace(" ", ":");
+      	date2 = date2.replace("/", ":");
+      	date2 = date2.replace("/", ":");
+
+      	console.log(date1);
+      	console.log(date2);
+      	console.log(serial1);
+
+      	load_MapMaxPB(serial1, date1, date2);
+    }
+</script>
+<form>
+      <div class="col-sm-2">
+             <select class="form-control" id="exampleSelect1"style="font-size: 8pt">
+                {% for list in listEquipment %}
+                    <option value="{{list.dev_id}}">{{list.modelo}}   {{list.dev_id}} </option>
+                {% endfor %}
+             </select>
+      </div>
+
+     <div class="col-sm-1">Start Date:</div>
+     <div class="col-sm-1">
+         <div>
+            <input type="text" id="datepicker1" class="input-group date" value=""style="font-size: 8pt"/>
+        </div>
+    </div>
+    <div class="col-sm-1">End Date:</div>
+    <div class="col-sm-1">
+         <div>
+            <input type="text" id="datepicker2" class="input-group date" value=""style="font-size: 8pt"/>
+        </div>
+    </div>
+    <script>
+
+        $(document).ready(function () {
+            $('#datepicker1').datetimepicker({
+                defaultDate: new Date,
+                autoclose: true,
+                format: 'yyyy/mm/dd hh:ii:ss',
+                language: 'pt-BR',
+
+            });
+            $('#datepicker2').datetimepicker({
+                defaultDate: new Date(1985, 00, 01,00,00,00),
+                autoclose: true,
+                format: 'yyyy/mm/dd hh:ii:ss',
+                language: 'pt-BR',
+            });
+        });
+
+    </script>
+  <div class="col-sm-1">
+      <button id="btnSubmitModal" type="button" class="btn btn-info"  onclick="MapChart();">Map</button>
+  </div>
+</form>
+   <div id="divMapsMaxPB"></div>
+<script>
+$(window).resize();
+</script>
+<script type="text/javascript">
+   hideImage(8);
+</script>
+
+{% endblock %}

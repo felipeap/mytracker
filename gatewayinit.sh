@@ -1,0 +1,1 @@
+sudo python /home/pi/GatewayMxt/Gateway.py

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+{% extends "base2.html" %}
+{% block content %}
+<style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #div_map {
+        height: 100%;
+      }
+#floating-panel {
+  position: absolute;
+  top: 35px;
+  left: 10%;
+  z-index: 5;
+  background: rgba(0,0,0,0);
+  padding: 1px;
+  border: 0px solid #999;
+  text-align: center;
+  font-family: 'Roboto','sans-serif';
+    font-size: 10px;
+  line-height: 18px;
+  padding-left: 10px;
+}
+
+</style>
+    <div id="floating-panel">
+		<!--<<input onclick="clearMarkers();" type=button value="Hide Markers">-->
+		<!--<<input onclick="showMarkers();" type=button value="Show All Markers">-->
+		<!--<input onclick="removeLine();" type=button value="Hide line">-->
+		<!--<input onclick="addLine(map2);" type=button value="Show line">-->
+        <!--<input onclick="onlyLora();" type=button value="Only Lora">-->
+        <!--<input onclick="onlyGPRS();" type=button value="Only GPRS">-->
+        <!--<input onclick="GPSMarkers();" type=button value="GPS Fix">-->
+        <!--<input onclick="notGPSMarkers();" type=button value="GPS Not Fix">-->
+        <!--<input onclick="GPRSMarkers();" type=button value="GPRS Connected">-->
+        <!--<input onclick="notGPRSMarkers();" type=button value="GPRS Not Connected">-->
+    </div>
+<table width="100%" height="100%">
+    <tr>
+        <td>
+            <div id="div_map"></div>
+        </td>
+    </tr>
+</table>
+
+<script>
+// In the following example, markers appear when the user clicks on the map.
+// The markers are stored in an array.
+// The user can then click an option to hide, show or delete the markers.
+var map2 = null;
+var markers = [];
+var image0 = 'static/marker0005.png';
+var image1 = 'static/marcador0001.png';
+var image2 = 'static/marcador0002.png';
+var image3 = 'static/marcador0003.png';
+var image4 = 'static/marcadorGatewayLora.png';
+var image5 = 'static/marcador0004.png';
+var info = [];
+var latlongs = [
+			{% if lista|length > 0 %}
+			{% for list in lista %}
+					{	type:{{list.type}}, lat: {{list.lat}}, lng:{{list.lng}}, text:"{{list.text|safe}}"},
+			{% endfor %}
+            {% endif %}
+			];
+latlongs[latlongs.length - 1].type = 9;
+
+function initMapa() {
+  map2 = null;
+
+  map2 = new google.maps.Map(document.getElementById('div_map'), {
+    zoom: 13,
+    center: {lat: {{lista[0].lat}}, lng: {{lista[0].lng}} },
+    mapType: 'normal',
+	showTip: true,
+	scrollwheel: true,
+    draggable: true,
+
+  });
+	flightPath = new google.maps.Polyline({
+		path: latlongs,
+		strokeColor: '#FF0000',
+		strokeOpacity: 1.0,
+		strokeWeight: 2
+	});
+    // Adds a marker
+    for (i = 0; i < latlongs.length; i++)
+	{
+		addMarker(latlongs[i], i, map2);
+	}
+    addLine(map2);
+    infoWindow = new google.maps.InfoWindow();
+
+}
+
+// Adds a marker to the map and push to the array.
+function addMarker(location, id, map)
+{
+	var icone;
+	var titulo;
+	if(location.type == 0)
+		icone = image0;
+	if(location.type >= 1 && location.type <= 4)
+	{
+		icone = image1;
+		titulo= "Position";
+	}
+	if(location.type >= 5 && location.type <= 8)
+	{
+		icone = image2;
+		titulo= "Accelerometer";
+	}
+	if(location.type == 9)
+	{
+		icone = image3;
+		titulo= "Last Position";
+	}
+
+    titulo = location.type.toString();
+
+    var marker = new google.maps.Marker({
+    position: location,
+    map: map,
+    title:titulo,
+
+	icon: icone,
+
+	info: location.text,
+  });
+  markers.push(marker);
+
+  for (var i = 0; i < markers.length; i++)
+	{
+			var marker = markers[i];
+
+	}
+	 google.maps.event.addListener(marker, 'click', function() {
+
+      // Variável que define a estrutura do HTML a inserir na Info Window.
+      var iwContent = marker.info;
+
+      // O conteúdo da variável iwContent é inserido na Info Window.
+      infoWindow.setContent(iwContent);
+
+      // A Info Window é aberta com um click no marcador.
+      infoWindow.open(map, marker);
+   });
+}
+
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+
+function onlyAccMarkers() {
+    setMapOnAll(null);
+  for (var i = 0; i < markers.length; i++) {
+    if( (markers[i].title == "5") || (markers[i].title == "6") || (markers[i].title == "7") || (markers[i].title == "8")  )
+        markers[i].setMap(map2);
+  }
+}
+function clearMarkers() {
+  setMapOnAll(null);
+}
+
+// Shows any markers currently in the array.
+function showMarkers() {
+  setMapOnAll(map2);
+}
+function addLine(map) {
+
+  flightPath.setMap(map);
+}
+
+function removeLine() {
+  flightPath.setMap(null);
+}
+    </script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCz5-S3P9na1YqpeE7IQJsoaOawLog8Cfw&signed_in=false&callback=initMapa"></script>
+<script>
+$(window).resize();
+</script>
+<script type="text/javascript">
+   hideImage(5);
+</script>
+{% endblock %}
